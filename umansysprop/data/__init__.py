@@ -20,8 +20,7 @@ except ImportError:
 import re
 import pdb 
 from openbabel import pybel
-import pkg_resources as pkg
-
+import importlib.resources as importlib_resources
 
 def smarts(s):
     if not isinstance(s, bytes):
@@ -40,7 +39,7 @@ def _read_data(
     result = {}
     cols = None
     for count, line in enumerate(
-            pkg.resource_stream(__name__, filename), start=1):
+            importlib_resources.files(__name__).joinpath(filename).open('rb'), start=1):
         data = _parse_re.match(line.decode('utf-8')).group('data')
         if data:
             data = data.split()
@@ -64,14 +63,13 @@ def _read_data(
 
 def _read_smarts(filename):
     return _read_data(filename, key_conv=int, value_conv=smarts)
-
-
+    
 def _read_matrix(filename, key_conv=str, value_conv=float, symmetric=True):
     result = {}
     col_keys = []
     row_keys = []
     for count, line in enumerate(
-            pkg.resource_stream(__name__, filename), start = 1):
+            importlib_resources.files(__name__).joinpath(filename).open('rb'), start=1):
         data = _parse_re.match(line.decode('utf-8')).group('data')
         if data:
             try:
